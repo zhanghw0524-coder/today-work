@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Today Work · TW · Maskable</title>
+  <rect width="512" height="512" fill="#4F46E5"/>
+  <g transform="translate(38.4 38.4) scale(0.85)" fill="none" stroke="#FFFFFF" stroke-width="42" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 86 190 L 238 190"/>
+    <path d="M 163 190 L 163 342"/>
+    <path d="M 218 267 L 251 333 L 296 240 L 345 333 L 424 175"/>
+  </g>
+</svg>

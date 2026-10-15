@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#7760db">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Today Work">
+  <meta name="description" content="Today Work · 个人学习、每日任务与长期目标。数据保存在本地。">
+  <title>Today Work</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+  <link rel="icon" type="image/svg+xml" sizes="any" href="icons/logo.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/features.css">
+  <link rel="stylesheet" href="css/plans.css">
+  <link rel="stylesheet" href="css/personalization.css">
+  <script src="js/storage.js" defer></script>
+  <script src="js/defaults.js" defer></script>
+  <script src="js/models.js" defer></script>
+  <script src="js/plans.js" defer></script>
+  <script src="js/assets.js" defer></script>
+  <script src="js/stats.js" defer></script>
+  <script src="js/app.js" defer></script>
+  <script src="js/features.js" defer></script>
+  <script src="js/plan-ui.js" defer></script>
+  <script src="js/personalization.js" defer></script>
+  <script src="js/pwa.js" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="#today" aria-label="Today Work 首页"><span class="brand-mark"><img src="icons/logo.svg" width="39" height="39" alt="" aria-hidden="true"></span><span class="product-name">Today Work</span></a>
+    <div class="nav-label">学习空间</div>
+    <nav aria-label="主导航">
+      <button class="nav-item active" data-view="today"><span>☑</span>每日任务<span class="nav-dot"></span></button>
+      <button class="nav-item" data-view="history"><span>▦</span>学习记录</button>
+      <button class="nav-item" data-view="stats"><span>◴</span>打卡统计</button>
+      <button class="nav-item" data-view="leetcode"><span>⌘</span>LeetCode</button>
+      <button class="nav-item" data-view="routes"><span>◇</span>路线</button>
+      <button class="nav-item" data-view="settings"><span>⚙</span>设置</button>
+    </nav>
+    <div class="goal-box"><span class="eyebrow">MAKE EVERY DAY COUNT</span><p>把大目标，<br>拆成今天的一小步。</p><div class="goal-tags"><span>学习</span><span>计划</span><span>成长</span></div><div class="goal-line"></div><small>专注当下，积累会有答案。</small></div>
+    <div class="sidebar-bottom"><button id="theme-toggle" class="quiet-button" aria-label="切换深色模式">◐ <span>深色模式</span></button><div class="local-note"><span></span> 数据仅保存在此浏览器</div></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar"><div>学习空间 <span>/</span> <strong id="breadcrumb">每日任务</strong></div><div class="topbar-right"><span class="save-indicator" id="save-status" role="status">✓ 已保存到本地</span><button id="export-button" class="icon-button" title="导出数据备份" aria-label="导出数据备份">⇩</button></div></header>
+    <div class="content">
+      <div id="storage-warning" class="notice" role="status" hidden></div>
+      <section class="page-heading"><div><div class="eyebrow" id="page-eyebrow">YOUR DAILY PROGRESS</div><h1 id="page-title">每天前进一点点<span class="heading-dot">.</span></h1><p id="page-subtitle">安排今天的任务，为长期目标积累每一小步。</p></div><div class="day-badge"><span class="day-badge-icon">↗</span><div><small>学习旅程</small><strong id="journey-day">第 1 天</strong></div></div></section>
+
+      <section class="metrics" aria-label="学习统计">
+        <article class="metric"><span class="metric-icon purple">◔</span><span class="metric-label">今日完成率</span><strong id="stat-today">0<span>%</span></strong><small id="stat-today-detail">0 / 0 项任务</small></article>
+        <article class="metric"><span class="metric-icon blue">✓</span><span class="metric-label">累计完成任务</span><strong id="stat-total">0<span>项</span></strong><small>每一份努力都有迹可循</small></article>
+        <article class="metric"><span class="metric-icon green">▦</span><span class="metric-label">已学习天数</span><strong id="stat-days">0<span>天</span></strong><small>至少完成一项任务即打卡</small></article>
+        <article class="metric"><span class="metric-icon orange">ϟ</span><span class="metric-label">连续打卡</span><strong id="stat-streak">0<span>天</span></strong><small id="stat-best">历史最佳 0 天</small></article>
+      </section>
+
+      <div id="today-view" class="view">
+        <div class="workspace-grid">
+          <div class="left-column">
+          <details id="carry-card" class="carry-card" hidden open><summary>昨日未完成 <span id="carry-count"></span></summary><div class="carry-content"><p class="subtle">按需加入今天，昨日记录保持原样。</p><div id="carry-items"></div><div class="carry-bulk"><button id="carry-all-add" class="text-button">全部加入今日</button><button id="carry-all-ignore" class="text-button">全部忽略</button></div></div></details>
+          <section class="tasks-panel" aria-label="每日任务">
+            <div class="task-toolbar"><h2 id="task-heading">今日任务 <span id="task-count">0</span></h2><div class="date-nav"><button id="prev-day" class="icon-button" aria-label="上一天">‹</button><input id="date-picker" type="date" aria-label="选择任务日期"><button id="next-day" class="icon-button" aria-label="下一天">›</button><button id="go-today" class="today-button">今天</button></div></div>
+            <div class="task-tools"><button id="open-plan-import" class="text-button">⇩ 导入今日计划</button></div>
+            <div class="daily-progress"><div><span id="selected-date-label"></span><strong id="daily-ratio">0 / 0 已完成 <b>0%</b></strong></div><div id="progress-track" class="progress-track" role="progressbar" aria-label="所选日期任务进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="progress-fill"></div></div></div>
+            <div id="task-groups"></div>
+            <div class="task-footer"><button id="add-category" class="quiet-button">＋ 新增分类</button><span id="task-footer-note">按自己的节奏，一项一项完成。</span></div>
+          </section>
+          </div>
+          <aside class="right-column">
+            <section class="calendar-card"><div class="card-heading"><h2>学习日历</h2><div class="calendar-controls"><button id="prev-month" class="icon-button" aria-label="上个月">‹</button><strong id="calendar-month"></strong><button id="next-month" class="icon-button" aria-label="下个月">›</button></div></div><div class="weekdays" aria-hidden="true"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div><div id="calendar-days" class="calendar-days"></div><div class="calendar-legend"><span><i class="legend-dot partial"></i>已打卡</span><span><i class="legend-dot full"></i>全部完成</span><span><i class="legend-outline"></i>今天</span></div></section>
+            <section class="focus-card"><div class="eyebrow">STAY FOCUSED</div><div class="focus-symbol" aria-hidden="true">↗</div><h2>今天的积累，<br>是明天的底气。</h2><p>从一个知识点、一道题开始。<br>不着急，但也不停下。</p><div class="focus-foot"><span class="tiny-line"></span> 写给正在努力的你</div></section>
+            <section class="recent-card"><div class="card-heading"><h2>最近记录</h2><button id="show-history" class="text-button">查看全部 ↗</button></div><div id="recent-history"></div></section>
+          </aside>
+        </div>
+      </div>
+
+      <section id="history-view" class="view record-panel" hidden><div class="section-heading"><div><h2>每一步，都算数</h2><p>点击记录，查看和编辑当天的任务。</p></div><span class="subtle">按日期倒序</span></div><div id="full-history"></div></section>
+      <section id="stats-view" class="view record-panel" hidden><div class="section-heading"><div><h2>你的学习足迹</h2><p>一点点积累，也会走出很远。</p></div></div><div id="stats-detail"></div><p class="stats-rule">统计口径：至少完成一项任务即为学习一天；连续打卡允许今天尚未完成，延续至昨天的记录。未来日期不计入统计。</p></section>
+      <section id="leetcode-view" class="view" hidden>
+        <div class="feature-toolbar"><p class="subtle">记录做过的题，也记录真正掌握的程度。</p><button id="add-problem" class="primary-button">＋ 新增题目</button></div>
+        <div id="problem-metrics" class="small-metrics"></div>
+        <div class="record-panel problem-panel"><div class="filter-bar"><label class="search-field"><span class="sr-only">搜索题号或题名</span><input id="problem-search" type="search" placeholder="搜索题号或题名，例如 739"></label><label><span class="sr-only">筛选题型</span><select id="filter-category"><option value="">全部题型</option></select></label><label><span class="sr-only">筛选难度</span><select id="filter-difficulty"><option value="">全部难度</option><option>简单</option><option>中等</option><option>困难</option></select></label><label><span class="sr-only">筛选状态</span><select id="filter-status"><option value="">全部状态</option><option>未完成</option><option>已完成</option><option>需要复习</option></select></label><label><span class="sr-only">筛选熟练度</span><select id="filter-mastery"><option value="">全部熟练度</option><option value="1">1 星</option><option value="2">2 星</option><option value="3">3 星</option></select></label><label><span class="sr-only">筛选独立完成</span><select id="filter-independent"><option value="">全部完成方式</option><option value="true">独立完成</option><option value="false">参考后完成</option></select></label><button id="reset-filters" class="text-button">重置筛选</button></div><p id="problem-result-count" class="subtle"></p><div id="problem-list"></div></div>
+        <div class="feature-columns"><section class="record-panel"><h2>待复习题目</h2><p class="subtle">1 星或标记为需要复习的题目。复习次数和日期会单独记录。</p><div id="problem-review"></div></section><section class="record-panel"><h2>题型掌握情况</h2><div id="problem-categories"></div></section></div>
+      </section>
+      <section id="routes-view" class="view" hidden><div class="feature-toolbar"><label class="route-picker">当前路线 <select id="route-select" aria-label="选择学习路线"></select></label><button id="add-route" class="primary-button">＋ 新增路线</button></div><div id="route-content"></div></section>
+      <section id="settings-view" class="view record-panel" hidden><div class="settings-section"><h2>外观</h2><p class="subtle">选择喜欢的外观，所有页面保持一致。</p><div class="theme-options"><button data-theme-choice="light" class="secondary-button">浅色</button><button data-theme-choice="dark" class="secondary-button">深色</button><button data-theme-choice="system" class="secondary-button">跟随系统</button></div></div><div class="settings-section"><h2>数据备份</h2><p class="subtle">任务、刷题记录、路线、导入计划、图片及个性化设置一起备份。</p><div class="button-row"><button id="settings-export" class="primary-button">导出全部数据</button><button id="open-backup" class="secondary-button">导入备份</button><button id="raw-export" class="text-button">导出原始数据 / 迁移快照</button><button id="previous-backup" class="text-button">导出恢复前备份</button></div><div id="download-ready" hidden></div><p class="subtle">数据仅保存在当前浏览器。请固定使用同一文件位置或网址，并定期导出。</p></div><div class="settings-section"><h2>安装与离线使用</h2><p id="pwa-status" class="pwa-status" role="status">正在检查离线支持…</p><button id="pwa-install" class="primary-button" hidden>安装 Today Work</button><p class="subtle">安装后可从桌面打开。第一次成功加载离线资源后，核心功能可离线使用。</p></div><div class="settings-section"><h2>Today Work</h2><p class="subtle">版本 2.1.0 · 本地优先的学习、任务与长期目标工具</p><p class="subtle">每个人都可以按自己的节奏，安排每一天。</p></div></section>
+      <footer class="page-footer"><span>慢慢来，每一天都离目标更近。</span><span>LOCAL FIRST · 为自己而学</span></footer>
+    </div>
+  </main>
+
+  <dialog id="edit-dialog" class="edit-dialog" aria-labelledby="dialog-title"><form id="edit-form"><div class="dialog-header"><h2 id="dialog-title">新增任务</h2><button type="button" id="close-dialog" class="icon-button" aria-label="关闭">×</button></div><label for="edit-input" id="edit-label">任务名称</label><input id="edit-input" type="text" maxlength="160" autocomplete="off" required><details id="task-details" class="task-details"><summary>更多信息（可选）</summary><div class="form-grid"><label>优先级<select id="task-priority"><option value="">未设置</option><option>高</option><option>中</option><option>低</option></select></label><label>预计时间（分钟）<input id="task-estimated" type="number" min="0" max="10080" step="1"></label><label>实际用时（分钟）<input id="task-actual" type="number" min="0" max="10080" step="1"></label><label class="full-width">任务备注<textarea id="task-note" rows="3" maxlength="4000"></textarea></label></div></details><p id="edit-hint">仅修改当前选择日期的内容。</p><div class="dialog-actions"><button type="button" id="cancel-dialog" class="secondary-button">取消</button><button type="submit" class="primary-button">保存</button></div></form></dialog>
+  <dialog id="plan-dialog" class="edit-dialog wide-dialog" aria-labelledby="plan-title"><div class="dialog-header"><h2 id="plan-title">导入今日计划</h2><button class="icon-button" data-close="plan-dialog" aria-label="关闭计划导入">×</button></div><p class="subtle">粘贴 JSON，先预览再导入。省略 date 时使用今天；也可指定其他日期。</p><label for="plan-input">计划 JSON</label><textarea id="plan-input" rows="9" spellcheck="false" placeholder='{"categories":[{"name":"学习","tasks":["阅读一章"]}]}'></textarea><div class="button-row"><button id="plan-paste" class="text-button">粘贴</button><button id="plan-clear" class="text-button">清空</button><button id="plan-parse" class="secondary-button">解析预览</button></div><p id="plan-error" class="form-error" role="status"></p><div id="plan-preview" class="import-preview" hidden></div><p id="plan-result" class="notice" role="status" hidden></p><div class="dialog-actions"><button class="secondary-button" data-close="plan-dialog">取消</button><button id="plan-confirm" class="primary-button" disabled>确认导入</button></div></dialog>
+  <dialog id="problem-dialog" class="edit-dialog wide-dialog" aria-labelledby="problem-dialog-title"><form id="problem-form"><div class="dialog-header"><h2 id="problem-dialog-title">新增题目</h2><button type="button" class="icon-button" data-close="problem-dialog" aria-label="关闭题目编辑">×</button></div><div class="form-grid"><label>题号<input id="problem-number" type="text" inputmode="numeric" pattern="[0-9]+" maxlength="10" required></label><label>题名<input id="problem-title" type="text" maxlength="160" required></label><label>题型<input id="problem-category" type="text" list="category-suggestions" maxlength="40" placeholder="例如：单调栈"></label><datalist id="category-suggestions"><option>数组</option><option>链表</option><option>二叉树</option><option>回溯</option><option>单调栈</option><option>动态规划</option></datalist><label>难度<select id="problem-difficulty"><option>简单</option><option selected>中等</option><option>困难</option></select></label><label>完成状态<select id="problem-status"><option>未完成</option><option>已完成</option><option>需要复习</option></select></label><label>熟练度<select id="problem-mastery"><option value="1">1 星 · 仍需练习</option><option value="2">2 星 · 基本掌握</option><option value="3">3 星 · 熟练掌握</option></select></label><label>首次完成日期<input id="problem-date" type="date" min="1900-01-01" max="9999-12-31"></label><label class="checkbox-field"><input id="problem-independent" type="checkbox">独立完成</label><label class="full-width">题目链接（可选）<input id="problem-url" type="url" maxlength="2000" placeholder="https://leetcode.cn/problems/..."></label><label class="full-width">备注<textarea id="problem-note" rows="3" maxlength="8000"></textarea></label></div><p id="problem-error" class="form-error" role="status"></p><div class="dialog-actions"><button type="button" class="secondary-button" data-close="problem-dialog">取消</button><button type="submit" class="primary-button">保存题目</button></div></form></dialog>
+  <dialog id="backup-dialog" class="edit-dialog wide-dialog" aria-labelledby="backup-title"><div class="dialog-header"><h2 id="backup-title">导入备份</h2><button class="icon-button" data-close="backup-dialog" aria-label="关闭备份导入">×</button></div><p class="subtle">选择 Today Work 备份，先检查概要。兼容旧版任务备份。</p><label for="backup-file">选择 JSON 备份文件</label><input id="backup-file" type="file" accept=".json,application/json"><details class="backup-paste"><summary>或者粘贴备份 JSON</summary><label for="backup-json">备份 JSON 内容</label><textarea id="backup-json" rows="6" spellcheck="false"></textarea><button id="backup-parse-text" class="secondary-button">解析备份</button></details><p id="backup-error" class="form-error" role="status"></p><div id="backup-preview" class="import-preview" hidden></div><p class="notice">导入备份将覆盖当前 Today Work 数据。恢复前会自动保留当前数据快照。</p><div class="dialog-actions"><button class="secondary-button" data-close="backup-dialog">取消</button><button id="backup-continue" class="primary-button" disabled>继续恢复</button></div></dialog>
+  <dialog id="action-dialog" class="edit-dialog" aria-labelledby="action-title"><div class="dialog-header"><h2 id="action-title"></h2></div><p id="action-description"></p><div class="dialog-actions"><button id="action-cancel" class="secondary-button" autofocus>取消</button><button id="action-confirm" class="primary-button danger-button">确认</button></div></dialog>
+  <dialog id="route-dialog" class="edit-dialog wide-dialog" aria-labelledby="route-dialog-title"><form id="route-form"><div class="dialog-header"><h2 id="route-dialog-title">新增路线</h2><button type="button" class="icon-button" data-close="route-dialog" aria-label="关闭路线编辑">×</button></div><label>路线名称<input id="route-name" maxlength="100" required placeholder="例如：英语学习、健身计划"></label><label for="route-outline">阶段与知识点</label><p class="subtle">用 # 开头表示阶段，## 表示可选分组；其他每行一个知识点。同名知识点会保留原进度。</p><textarea id="route-outline" rows="12" spellcheck="false" placeholder="# 起步&#10;明确目标&#10;准备资料&#10;&#10;# 实践&#10;完成一次练习&#10;总结与改进"></textarea><p id="route-error" class="form-error" role="status"></p><div class="dialog-actions"><button type="button" class="secondary-button" data-close="route-dialog">取消</button><button type="submit" class="primary-button">保存路线</button></div></form></dialog>
+  <dialog id="delete-dialog" class="edit-dialog" aria-labelledby="delete-title" aria-describedby="delete-description"><div class="dialog-header"><h2 id="delete-title">删除这项任务？</h2></div><p id="delete-task-name" class="delete-task-name"></p><p id="delete-description">只删除当前日期的这一项任务，删除后无法撤销。</p><div class="dialog-actions"><button id="cancel-delete" class="secondary-button" autofocus>取消</button><button id="confirm-delete" class="primary-button danger-button">确认删除</button></div></dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
+</body>
+</html>
+
+
+
+

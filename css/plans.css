@@ -1,0 +1,21 @@
+.task-tools {gap:12px;flex-wrap:wrap;justify-content:flex-start}
+.plan-wizard {width:850px;max-width:calc(100vw - 32px)}
+.plan-wizard h3 {font-size:15px;margin:20px 0 10px}
+.plan-summary {padding:4px 18px 10px;background:var(--accent-soft);border-radius:10px;margin:18px 0;overflow-wrap:anywhere}
+.plan-summary p {font-size:13px;line-height:1.8;white-space:pre-wrap}
+.weekday-choices {border:0;padding:10px 0;display:flex;flex-wrap:wrap;gap:14px;margin:8px 0 14px}
+.weekday-choices legend {font-size:12px;color:var(--subtle);padding:0}
+.weekday-choices label {display:flex;align-items:center;gap:5px;margin:0;font-size:13px}
+.weekday-choices input,.plan-ack input {width:17px;height:17px;margin:0;padding:0;accent-color:var(--accent);flex:none}
+.scheduled-day {border:1px solid var(--line);border-radius:9px;padding:16px;margin:12px 0;overflow-wrap:anywhere}
+.scheduled-heading {display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:14px}
+.scheduled-heading small,.scheduled-day li small {color:var(--muted);font-size:11px}
+.scheduled-day ol {padding-left:24px;margin-bottom:0}
+.scheduled-day li {font-size:13px;padding:7px 0}
+.scheduled-day li small {display:block;margin-top:5px}
+.scheduled-day li p {font-size:12px;color:var(--subtle);white-space:pre-wrap;margin:6px 0}
+.schedule-warning {padding:10px;background:var(--accent-soft);border-radius:6px;font-size:12px;color:var(--text)}
+.plan-ack {line-height:1.8;margin:16px 0!important;align-items:flex-start!important;font-size:13px!important}
+.plan-ack input {margin-top:3px}
+#prompt-form>button {margin-top:14px}
+@media(max-width:720px){.task-tools{gap:7px;padding-inline:14px}.plan-wizard{max-width:calc(100vw - 20px)}.weekday-choices{gap:12px}.plan-wizard .form-grid{grid-template-columns:1fr}.scheduled-day{padding:12px}}
