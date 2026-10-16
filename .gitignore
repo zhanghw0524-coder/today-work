@@ -1,0 +1,50 @@
+/backups/
+/test-artifacts/
+/dist/
+/today-work-backup-*.json
+/today-work-auto-backup-before-import.json
+/today-work-raw-snapshots-*.json
+
+# Dependencies and generated output
+node_modules/
+coverage/
+*.log
+
+# Secrets and machine-specific settings
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+*.p12
+*.pfx
+.ssh/
+.aws/
+.codex/
+.agents/
+.vscode/
+.idea/
+
+# Local browser data, exports, images and debugging artifacts
+/screenshots/
+/personal-data/
+/user-data/
+/browser-data/
+/exports/
+/downloads/
+**/today-work-backup-*.json
+**/today-work-auto-backup-before-import.json
+**/today-work-raw-snapshots-*.json
+*.sqlite
+*.sqlite3
+*.db
+*.zip
+*.har
+
+# Temporary operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.tmp
+*.bak

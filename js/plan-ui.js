@@ -120,7 +120,7 @@
   const records = document.createElement('section'); records.className = 'settings-section'; records.id = 'imported-plans';
   $('settings-view').append(records);
   function renderRecords() {
-    records.innerHTML = '<h2>已导入计划</h2><p class="subtle">仅记录计划来源和排期。手动转入今日不会改变原计划或历史。</p>' + (A.getData().plans?.length ? A.getData().plans.map(record => `<p><button class="text-button" data-plan-date="${esc(record.mapping[0].date)}">${esc(record.plan.planName)}</button> <small class="subtle">${record.mapping[0].date} → ${record.mapping[record.mapping.length - 1].date} · ${record.mapping.length} 个执行日</small></p>`).join('') : '<p class="subtle">还没有导入多日计划。</p>');
+    records.innerHTML = '<h2>已导入计划</h2><p class="subtle">仅记录计划来源和排期。手动转入今日不会改变原计划或历史。</p>' + (A.getData().plans?.length ? A.getData().plans.map(record => `<p data-plan-row="${esc(record.id)}"><button class="text-button" data-plan-date="${esc(record.mapping[0].date)}">${esc(record.plan.planName)}</button> <small class="subtle">${record.mapping[0].date} → ${record.mapping[record.mapping.length - 1].date} · ${record.mapping.length} 个执行日</small></p>`).join('') : '<p class="subtle">还没有导入多日计划。</p>');
   }
   records.addEventListener('click', event => { const button = event.target.closest('[data-plan-date]'); if (button) A.selectDate(button.dataset.planDate); });
   document.addEventListener('todaywork:render', renderRecords); renderRecords();

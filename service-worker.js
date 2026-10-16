@@ -1,13 +1,13 @@
 'use strict';
 // Bump this version whenever application-shell files change.
-const CACHE_VERSION = 'v2.1.2';
+const CACHE_VERSION = 'v2.2.1';
 const BASE = new URL('./', self.location.href);
 const CACHE_PREFIX = `today-work:${BASE.pathname}:`;
 const CACHE_NAME = `${CACHE_PREFIX}${CACHE_VERSION}`;
 const CORE_FILES = [
   './', 'index.html', 'manifest.webmanifest',
-  'css/style.css', 'css/features.css', 'css/plans.css', 'css/personalization.css',
-  'js/storage.js', 'js/defaults.js', 'js/models.js', 'js/plans.js', 'js/plan-ui.js', 'js/assets.js', 'js/personalization.js', 'js/stats.js', 'js/app.js', 'js/features.js', 'js/pwa.js',
+  'css/style.css', 'css/features.css', 'css/plans.css', 'css/personalization.css', 'css/deletions.css',
+  'js/storage.js', 'js/defaults.js', 'js/models.js', 'js/plans.js', 'js/deletions.js', 'js/delete-ui.js', 'js/plan-ui.js', 'js/assets.js', 'js/personalization.js', 'js/stats.js', 'js/app.js', 'js/features.js', 'js/pwa.js',
   'icons/logo.svg', 'icons/favicon-32.png',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-192.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png'
 ];

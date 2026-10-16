@@ -135,6 +135,17 @@
         planIds.add(record.id); data.plans.push(record);
       } catch { issues.push('隔离异常计划记录'); }
     }
+    data.deletions = [];
+    if (source.deletions !== undefined && !Array.isArray(source.deletions)) issues.push('修复删除记录列表');
+    const deletionIds = new Set();
+    for (const entry of Array.isArray(source.deletions) ? source.deletions : []) {
+      try {
+        if (!global.TodayWorkDeletions) throw new Error('删除模块未加载');
+        global.TodayWorkDeletions.validateEntry(entry);
+        if (deletionIds.has(entry.id)) throw new Error('重复的删除记录 ID');
+        deletionIds.add(entry.id); data.deletions.push(entry);
+      } catch { issues.push('隔离异常删除快照'); }
+    }
     const theme = source.settings?.theme || legacyTheme;
     data.settings = { ...(object(source.settings) ? source.settings : {}), theme: ['light', 'dark', 'system'].includes(theme) ? theme : 'system' };
     if (source.settings?.personalization !== undefined && global.TodayWorkAssets) {

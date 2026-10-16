@@ -1,0 +1,27 @@
+.task-actions {opacity:1!important;flex:none}
+.task-actions .more-actions,.group-heading .more-actions {font-size:21px;min-width:36px;min-height:36px;color:var(--subtle);border:1px solid var(--line);background:var(--surface);border-radius:7px;line-height:1}
+.item-actions-dialog {width:360px}
+.item-actions-dialog #item-actions-name,.deletion-name {overflow-wrap:anywhere;font-size:14px!important;color:var(--text)!important;white-space:pre-wrap}
+.action-menu-button {display:block;width:100%;text-align:left;min-height:44px;margin:12px 0;font-size:14px}
+.delete-menu-button {color:#c65f70!important}
+#deletion-choices {padding:0;border:0;margin:20px 0}
+#deletion-choices legend {font-size:12px;color:var(--subtle);margin-bottom:8px}
+.edit-dialog .deletion-choice {display:flex;align-items:flex-start;gap:10px;padding:13px;border:1px solid var(--line);border-radius:8px;margin:10px 0;cursor:pointer}
+.edit-dialog .deletion-choice input,#deletion-all-ack {width:18px;height:18px;flex:none;padding:0;margin:3px 0 0;accent-color:var(--accent)}
+.deletion-choice strong {font-size:13px;font-weight:600}
+.deletion-choice small {font-size:12px;color:var(--muted);margin-top:5px;line-height:1.7}
+.undo-notice {display:flex;justify-content:space-between;align-items:center;gap:14px;padding:15px 18px;background:var(--surface);border:1px solid var(--accent);border-radius:10px;margin:0 0 22px;overflow-wrap:anywhere}
+.undo-notice>div:first-child {min-width:0}
+.undo-notice strong {font-size:13px;font-weight:500}
+.undo-notice small {font-size:11px;color:var(--muted);margin-top:5px}
+.undo-notice .button-row {flex:none;gap:10px}
+.deleted-record {display:flex;align-items:center;justify-content:space-between;gap:15px;padding:14px 0;border-bottom:1px solid var(--line)}
+.deleted-record>div {min-width:0;overflow-wrap:anywhere}
+.deleted-record strong {font-size:13px;font-weight:500}
+.deleted-record small {font-size:11px;color:var(--muted);margin-top:6px}
+.deleted-record button {flex:none;min-height:38px}
+#recent-deletions summary {cursor:pointer;font-size:13px;padding:12px 0}
+#recent-deletions>[data-clear-deletions] {margin-top:16px;min-height:40px}
+#imported-plans [data-plan-row] {padding:10px 0;border-bottom:1px solid var(--line)}
+#imported-plans [data-delete-plan] {min-height:36px}
+@media(max-width:720px){.task-actions .more-actions,.group-heading .more-actions{min-width:44px;min-height:44px}.undo-notice{flex-wrap:wrap}.undo-notice .button-row{flex-wrap:wrap}.task-label{font-size:12px}}

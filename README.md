@@ -77,3 +77,37 @@ Today Work 专注于：
 **目标 → 计划 → 每日行动 → 记录与调整**
 
 让计划真正执行下去。
+
+## 当前版本：2.2
+
+- 任务和分类右侧常显“⋯”菜单，支持编辑、重命名及删除。
+- 删除分类默认保留任务并移到“未分类”；删除导入计划时可选择保留任务、只删除今日及以后的未完成任务，或明确删除全部关联任务。
+- 删除后可从顶部撤销，或从“设置 → 最近删除”恢复；刷新和 JSON 备份保留撤销副本。
+- 保留既有 AI 计划导入、排期、个性化、PWA 和旧数据兼容。
+
+使用及开发文档：[完整本地说明](docs/LOCAL-DEVELOPMENT.md)、[计划协议](docs/TW_PLAN_V1.md)、[删除机制](docs/DELETION.md)、[验收记录](tests/QA-2.2.md)。
+
+## 本地开发与同步
+
+仓库根目录就是应用目录，运行 `node server.cjs` 后打开 http://127.0.0.1:8765/；也可以双击 `启动 Today Work.cmd`。所有功能保持纯前端，Node 仅用于本地静态文件服务。
+
+自动检查：
+
+```text
+node --test tests/core.test.cjs tests/plans.test.cjs tests/assets.test.cjs tests/deletions.test.cjs tests/pwa.test.cjs
+```
+
+后续修改使用普通 Git 提交和推送：
+
+```text
+git status
+git fetch origin
+git diff
+git add <本次需要提交的文件>
+git commit -m "说明本次修改"
+git push origin main
+```
+
+远程有新提交时，先检查并合并后再推送；不要强制推送。`.gitignore` 排除本地备份、个人数据、测试导出、截图、依赖和密钥文件。提交前仍需检查 `git diff --cached`，不要将个人数据写入源码或文档。
+
+当前保留根目录静态站点结构和相对资源路径，兼容 GitHub Pages 的仓库子目录；本次不更改仓库 Pages 设置。浏览器个人数据不随 Git 同步，本地网址与线上网址之间迁移仍须手动导出、恢复备份。

@@ -11,7 +11,6 @@
   let view = 'today';
   let data;
   let editing = null;
-  let deleting = null;
   let toastTimer;
   let featureUI = null;
   let downloadUrl = null;
@@ -207,7 +206,7 @@
     $('task-groups').innerHTML = day.categories.map((category, index) => {
       const done = category.tasks.filter(task => task.done).length;
       const icons = ['◇', '⌘', '✎', '▦'];
-      return `<section class="task-group" data-group="${escape(category.id)}"><div class="group-heading"><span class="category-icon" aria-hidden="true">${icons[index % icons.length]}</span><h3 class="group-name">${escape(category.name)}</h3><span class="group-count">${done} / ${category.tasks.length}</span><button class="icon-button" data-action="rename-category" data-category="${escape(category.id)}" title="修改分类名称" aria-label="修改分类 ${escape(category.name)} 的名称">✎</button></div><div class="task-list">${Models.sortedTasks(category).map(task => `<div class="task-row ${task.done ? 'completed' : ''}"><label class="task-label"><input type="checkbox" data-category="${escape(category.id)}" data-task="${escape(task.id)}" ${task.done ? 'checked' : ''}><span>${task.priority ? `<i class="priority-dot priority-${{高:'high',中:'medium',低:'low'}[task.priority]}" title="${escape(task.priority)}优先级" aria-label="${escape(task.priority)}优先级"></i>` : ''}${escape(task.title)}</span></label><div class="task-actions">${/leetcode|刷题|算法/i.test(category.name) ? `<button class="text-button record-problem" data-action="record-problem" data-category="${escape(category.id)}" data-task="${escape(task.id)}" ${task.done ? '' : 'hidden'}>加入刷题记录</button>` : ''}<button class="icon-button" data-action="edit-task" data-category="${escape(category.id)}" data-task="${escape(task.id)}" title="编辑任务" aria-label="编辑 ${escape(task.title)}">✎</button><button class="icon-button delete" data-action="delete-task" data-category="${escape(category.id)}" data-task="${escape(task.id)}" title="删除任务" aria-label="删除 ${escape(task.title)}">×</button></div></div>`).join('')}</div><button class="add-task" data-action="add-task" data-category="${escape(category.id)}"><span>＋</span> 添加任务</button></section>`;
+      return `<section class="task-group" data-group="${escape(category.id)}"><div class="group-heading"><span class="category-icon" aria-hidden="true">${icons[index % icons.length]}</span><h3 class="group-name">${escape(category.name)}</h3><span class="group-count">${done} / ${category.tasks.length}</span><button class="icon-button more-actions" data-action="category-menu" data-category="${escape(category.id)}" aria-label="分类操作 ${escape(category.name)}" aria-haspopup="dialog">⋯</button></div><div class="task-list">${Models.sortedTasks(category).map(task => `<div class="task-row ${task.done ? 'completed' : ''}"><label class="task-label"><input type="checkbox" data-category="${escape(category.id)}" data-task="${escape(task.id)}" ${task.done ? 'checked' : ''}><span>${task.priority ? `<i class="priority-dot priority-${{高:'high',中:'medium',低:'low'}[task.priority]}" title="${escape(task.priority)}优先级" aria-label="${escape(task.priority)}优先级"></i>` : ''}${escape(task.title)}</span></label><div class="task-actions">${/leetcode|刷题|算法/i.test(category.name) ? `<button class="text-button record-problem" data-action="record-problem" data-category="${escape(category.id)}" data-task="${escape(task.id)}" ${task.done ? '' : 'hidden'}>加入刷题记录</button>` : ''}<button class="icon-button more-actions" data-action="task-menu" data-category="${escape(category.id)}" data-task="${escape(task.id)}" aria-label="任务操作 ${escape(task.title)}" aria-haspopup="dialog">⋯</button></div></div>`).join('')}</div><button class="add-task" data-action="add-task" data-category="${escape(category.id)}"><span>＋</span> 添加任务</button></section>`;
     }).join('');
   }
 
@@ -241,6 +240,7 @@
   function openEditor(type, categoryId, taskId) {
     const category = data.days[selected]?.categories.find(group => group.id === categoryId);
     const task = category?.tasks.find(item => item.id === taskId);
+    if (type !== 'add-category' && (!category || (type === 'edit-task' && !task))) { toast('任务或分类已变化，请刷新后重新打开。'); return; }
     editing = { type, date: selected, categoryId, taskId };
     const categoryEdit = type === 'add-category' || type === 'rename-category';
     $('dialog-title').textContent = ({ 'add-task': '新增任务', 'edit-task': '编辑任务', 'add-category': '新增分类', 'rename-category': '修改分类名称' })[type];
@@ -298,25 +298,12 @@
         if (next.days[selected]?.categories.length) throw new Error('该日期已在其他页面建立计划，请刷新后查看。');
         next.days[selected] = S.exampleDay();
       });
-    } else if (action === 'delete-task') {
-      const current = data.days[selected].categories.find(group => group.id === category).tasks.find(item => item.id === task);
-      deleting = { date: selected, categoryId: category, taskId: task };
-      $('delete-task-name').textContent = current.title;
-      $('delete-dialog').showModal();
+    } else if (action === 'task-menu' || action === 'category-menu') {
+      window.TodayWorkDeleteUI.openMenu({ type: action === 'task-menu' ? 'task' : 'category', date: selected, categoryId: category, ...(task ? { taskId: task } : {}) });
     } else if (action === 'record-problem') {
       const current = data.days[selected]?.categories.find(group => group.id === category)?.tasks.find(item => item.id === task);
       if (current?.done) featureUI?.openProblem(Models.taskProblem(current, selected));
     } else openEditor(action, category, task);
-  });
-  $('cancel-delete').addEventListener('click', () => $('delete-dialog').close());
-  $('delete-dialog').addEventListener('close', () => { deleting = null; });
-  $('confirm-delete').addEventListener('click', () => {
-    if (!deleting) return;
-    const { date, categoryId, taskId } = deleting;
-    if (mutate(next => {
-      const group = findCategory(next, date, categoryId);
-      group.tasks = group.tasks.filter(item => item.id !== taskId);
-    })) $('delete-dialog').close();
   });
   const closeEditor = () => { $('edit-dialog').close(); editing = null; };
   $('close-dialog').addEventListener('click', closeEditor);
@@ -376,7 +363,7 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden) checkNewDay(); });
   window.TodayWorkApp = {
     getData: () => data, getToday: () => today, getSelected: () => selected, getView: () => view,
-    mutate, selectDate, switchView, toast, escape, formatDate, download, setTheme,
+    mutate, selectDate, switchView, toast, escape, formatDate, download, setTheme, openEditor,
     replaceData(next) { data = next; applyTheme(data.settings.theme); $('save-status').textContent = '✓ 已保存到本地'; $('save-status').classList.remove('error'); render(); },
     registerFeatures(features) { featureUI = features; render(); }
   };

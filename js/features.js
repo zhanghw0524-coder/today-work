@@ -252,7 +252,7 @@
     candidateBackup = S.parseBackup(content);
     const value = candidateBackup.data;
     const tasks = Object.values(value.days).reduce((sum, day) => sum + window.StudyStats.summarize(day).total, 0);
-    $('backup-preview').innerHTML = `<h3>备份概要</h3><p>导出时间：${esc(candidateBackup.exportedAt)}</p><p>${Object.keys(value.days).length} 个日期 · ${tasks} 项任务 · ${value.leetcode.length} 道题 · ${value.routes.length} 条路线 · ${value.plans.length} 个计划 · ${Object.keys(candidateBackup.imageAssets).length} 张图片</p><p class="subtle">数据版本 ${value.version} · 开始日期 ${esc(value.startDate)}</p>`;
+    $('backup-preview').innerHTML = `<h3>备份概要</h3><p>导出时间：${esc(candidateBackup.exportedAt)}</p><p>${Object.keys(value.days).length} 个日期 · ${tasks} 项任务 · ${value.leetcode.length} 道题 · ${value.routes.length} 条路线 · ${value.plans.length} 个计划 · ${Object.keys(candidateBackup.imageAssets).length} 张图片 · ${value.deletions.length} 条可撤销删除</p><p class="subtle">数据版本 ${value.version} · 开始日期 ${esc(value.startDate)}</p>`;
     $('backup-preview').hidden = false; $('backup-continue').disabled = false;
   }
   function invalidateBackup() {
@@ -284,7 +284,7 @@
     if (restoring) return;
     if (!candidateBackup) return;
     const incoming = candidateBackup;
-    confirmAction('覆盖当前 Today Work 数据？', '导入备份将覆盖当前 Today Work 数据，包括任务、题目、路线、计划、图片和设置。系统会先保留恢复前快照；不会清除其他网站或应用的数据。', async () => {
+    confirmAction('覆盖当前 Today Work 数据？', '导入备份将覆盖当前 Today Work 数据，包括任务、题目、路线、计划、图片、设置和删除副本。系统会先保留恢复前快照；不会清除其他网站或应用的数据。', async () => {
       if (restoring) return;
       restoring = true; $('backup-continue').disabled = true;
       try {
