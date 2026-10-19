@@ -2,9 +2,9 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
   <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" content="#7760db">
+  <meta name="theme-color" content="#4f46e5">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Today Work">
@@ -19,18 +19,21 @@
   <link rel="stylesheet" href="css/plans.css">
   <link rel="stylesheet" href="css/personalization.css">
   <link rel="stylesheet" href="css/deletions.css">
+  <link rel="stylesheet" href="css/experience.css">
   <script src="js/storage.js" defer></script>
   <script src="js/defaults.js" defer></script>
   <script src="js/models.js" defer></script>
   <script src="js/plans.js" defer></script>
   <script src="js/deletions.js" defer></script>
   <script src="js/assets.js" defer></script>
+  <script src="js/sounds.js" defer></script>
   <script src="js/stats.js" defer></script>
   <script src="js/app.js" defer></script>
   <script src="js/features.js" defer></script>
   <script src="js/plan-ui.js" defer></script>
   <script src="js/personalization.js" defer></script>
   <script src="js/delete-ui.js" defer></script>
+  <script src="js/experience.js" defer></script>
   <script src="js/pwa.js" defer></script>
 </head>
 <body>
@@ -91,7 +94,7 @@
         <div class="feature-columns"><section class="record-panel"><h2>待复习题目</h2><p class="subtle">1 星或标记为需要复习的题目。复习次数和日期会单独记录。</p><div id="problem-review"></div></section><section class="record-panel"><h2>题型掌握情况</h2><div id="problem-categories"></div></section></div>
       </section>
       <section id="routes-view" class="view" hidden><div class="feature-toolbar"><label class="route-picker">当前路线 <select id="route-select" aria-label="选择学习路线"></select></label><button id="add-route" class="primary-button">＋ 新增路线</button></div><div id="route-content"></div></section>
-      <section id="settings-view" class="view record-panel" hidden><div class="settings-section"><h2>外观</h2><p class="subtle">选择喜欢的外观，所有页面保持一致。</p><div class="theme-options"><button data-theme-choice="light" class="secondary-button">浅色</button><button data-theme-choice="dark" class="secondary-button">深色</button><button data-theme-choice="system" class="secondary-button">跟随系统</button></div></div><div class="settings-section"><h2>数据备份</h2><p class="subtle">任务、刷题记录、路线、导入计划、图片及个性化设置一起备份。</p><div class="button-row"><button id="settings-export" class="primary-button">导出全部数据</button><button id="open-backup" class="secondary-button">导入备份</button><button id="raw-export" class="text-button">导出原始数据 / 迁移快照</button><button id="previous-backup" class="text-button">导出恢复前备份</button></div><div id="download-ready" hidden></div><p class="subtle">数据仅保存在当前浏览器。请固定使用同一文件位置或网址，并定期导出。</p></div><div class="settings-section"><h2>安装与离线使用</h2><p id="pwa-status" class="pwa-status" role="status">正在检查离线支持…</p><button id="pwa-install" class="primary-button" hidden>安装 Today Work</button><p class="subtle">安装后可从桌面打开。第一次成功加载离线资源后，核心功能可离线使用。</p></div><div class="settings-section"><h2>Today Work</h2><p class="subtle">版本 2.2.0 · 本地优先的学习、任务与长期目标工具</p><p class="subtle">每个人都可以按自己的节奏，安排每一天。</p></div></section>
+      <section id="settings-view" class="view record-panel" hidden><div class="settings-section"><h2>外观</h2><p class="subtle">选择喜欢的外观，所有页面保持一致。</p><div class="theme-options"><button data-theme-choice="light" class="secondary-button">浅色</button><button data-theme-choice="dark" class="secondary-button">深色</button><button data-theme-choice="system" class="secondary-button">跟随系统</button></div></div><div class="settings-section"><h2>数据备份</h2><p class="subtle">任务、刷题记录、路线、导入计划、图片及个性化设置一起备份。</p><div class="button-row"><button id="settings-export" class="primary-button">导出全部数据</button><button id="open-backup" class="secondary-button">导入备份</button><button id="raw-export" class="text-button">导出原始数据 / 迁移快照</button><button id="previous-backup" class="text-button">导出恢复前备份</button></div><div id="download-ready" hidden></div><p class="subtle">数据仅保存在当前浏览器。请固定使用同一文件位置或网址，并定期导出。</p></div><div class="settings-section"><h2>安装与离线使用</h2><p id="pwa-status" class="pwa-status" role="status">正在检查离线支持…</p><button id="pwa-install" class="primary-button" hidden>安装 Today Work</button><p class="subtle">安装后可从桌面打开。第一次成功加载离线资源后，核心功能可离线使用。</p></div><div class="settings-section"><h2>Today Work</h2><p class="subtle">版本 2.4.0 · 本地优先的学习、任务与长期目标工具</p><p class="subtle">每个人都可以按自己的节奏，安排每一天。</p></div></section>
       <footer class="page-footer"><span>慢慢来，每一天都离目标更近。</span><span>LOCAL FIRST · 为自己而学</span></footer>
     </div>
   </main>

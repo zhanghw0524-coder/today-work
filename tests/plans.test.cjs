@@ -17,7 +17,8 @@ test('protocol accepts JSON and fenced JSON, defaults and plain text; rejects ma
   const { P } = env(); const input = spec(1); input.days[0].tasks[0].title = '<img src=x onerror=alert(1)>';
   const plan = P.parse('```json\n' + JSON.stringify(input) + '\n```');
   assert.equal(plan.days[0].tasks[0].priority, 'medium'); assert.match(plan.days[0].tasks[0].title, /onerror/);
-  for (const value of ['{', '说明\n' + JSON.stringify(input), JSON.stringify({ ...input, format: 'x' }), JSON.stringify({ ...input, categories: ['学习', '学习'] }), JSON.stringify({ ...input, date: '2026-10-20' }), ' '.repeat(1048577)]) assert.throws(() => P.parse(value));
+  assert.equal(P.parse('说明\n' + JSON.stringify(input) + '\n请检查').planName, input.planName);
+  for (const value of ['{', JSON.stringify({ ...input, format: 'x' }), JSON.stringify({ ...input, categories: ['学习', '学习'] }), JSON.stringify({ ...input, date: '2026-10-20' }), ' '.repeat(1048577)]) assert.throws(() => P.parse(value));
   for (const change of [p => { p.days[0].day = 2; }, p => { p.days[0].tasks = []; }, p => { p.days[0].tasks[0].estimatedMinutes = 1.5; }, p => { p.days[0].tasks[0].category = '不存在'; }, p => { p.days[0].tasks[0].priority = null; }]) { const p = spec(1); change(p); assert.throws(() => P.parse(JSON.stringify(p))); }
 });
 test('local calendar scheduling skips weekends and non-executable start; crosses month/year; no weekdays and range overflow rejected', () => {

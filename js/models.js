@@ -152,10 +152,24 @@
     point.status = status;
   }
   const priorityRank = { 高: 0, 中: 1, 低: 2, '': 3 };
+  function postponeTask(data, date, taskId, targetDate) {
+    if (!S.validDate(date) || !S.validDate(targetDate) || targetDate <= date) throw new Error('请选择晚于原安排的有效日期。');
+    const next = JSON.parse(JSON.stringify(data));
+    const category = next.days[date]?.categories.find(group => group.tasks.some(task => task.id === taskId));
+    const task = category?.tasks.find(item => item.id === taskId);
+    if (!task) throw new Error('任务已变化，请重新打开。');
+    if (task.done) throw new Error('已完成记录保留在原日期，不能推迟。');
+    const day = next.days[targetDate] ||= { categories: [] };
+    if (day.categories.some(group => group.tasks.some(item => item.id === taskId))) throw new Error('目标日期已有同一任务，未重复生成。');
+    let target = day.categories.find(group => group.name.trim() === category.name.trim());
+    if (!target) { target = { id: S.uid(), name: category.name, tasks: [], manualOrder: true }; day.categories.push(target); }
+    category.tasks = category.tasks.filter(item => item.id !== taskId); target.tasks.push(task);
+    S.validate(next); Object.assign(data, next); return task;
+  }
   function sortedTasks(category) {
     // Existing manual order takes precedence; sorting otherwise stays stable within a priority.
     if (category.manualOrder === true) return [...category.tasks];
     return category.tasks.map((task, index) => ({ task, index })).sort((a, b) => (priorityRank[a.task.priority || ''] ?? 3) - (priorityRank[b.task.priority || ''] ?? 3) || a.index - b.index).map(item => item.task);
   }
-  global.TodayWorkModels = { parsePlan, mergePlan, pendingCarryOver, handleCarryOver, problemStats, filterProblems, saveProblem, reviewProblem, taskProblem, routeProgress, updateRoute, sortedTasks, validateProblem, routeOutline, parseRoute };
+  global.TodayWorkModels = { parsePlan, mergePlan, pendingCarryOver, handleCarryOver, postponeTask, problemStats, filterProblems, saveProblem, reviewProblem, taskProblem, routeProgress, updateRoute, sortedTasks, validateProblem, routeOutline, parseRoute };
 })(globalThis);

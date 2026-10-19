@@ -19,8 +19,8 @@
     catch { status.textContent = '暂时无法显示安装窗口，也可以使用浏览器菜单中的安装入口。'; }
   });
   const themeMeta = document.querySelector('meta[name="theme-color"]');
-  new MutationObserver(() => { themeMeta.content = document.documentElement.dataset.theme === 'dark' ? '#17181d' : '#7760db'; }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-  themeMeta.content = document.documentElement.dataset.theme === 'dark' ? '#17181d' : '#7760db';
+  new MutationObserver(() => { themeMeta.content = document.documentElement.dataset.theme === 'dark' ? '#17181d' : '#4f46e5'; }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  themeMeta.content = document.documentElement.dataset.theme === 'dark' ? '#17181d' : '#4f46e5';
   if (location.protocol === 'file:') {
     status.textContent = '当前为文件打开模式。任务可正常使用；安装和离线缓存请使用固定本地网址或 HTTPS 网站。';
     status.dataset.state = 'file'; return;

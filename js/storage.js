@@ -148,6 +148,10 @@
     }
     const theme = source.settings?.theme || legacyTheme;
     data.settings = { ...(object(source.settings) ? source.settings : {}), theme: ['light', 'dark', 'system'].includes(theme) ? theme : 'system' };
+    if (source.settings?.sound !== undefined && global.TodayWorkSounds) {
+      try { data.settings.sound = global.TodayWorkSounds.settings(source.settings.sound); }
+      catch { delete data.settings.sound; issues.push('修复音效设置'); }
+    }
     if (source.settings?.personalization !== undefined && global.TodayWorkAssets) {
       try { data.settings.personalization = global.TodayWorkAssets.appearance(source.settings.personalization); }
       catch { delete data.settings.personalization; issues.push('修复个性化设置'); }

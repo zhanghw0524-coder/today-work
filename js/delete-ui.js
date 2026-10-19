@@ -8,6 +8,19 @@
     <dialog id="deletion-dialog" class="edit-dialog wide-dialog" aria-labelledby="deletion-title"><div class="dialog-header"><h2 id="deletion-title"></h2><button class="icon-button" data-deletion-close="deletion-dialog" aria-label="关闭删除确认">×</button></div><p id="deletion-name" class="deletion-name"></p><p id="deletion-summary"></p><fieldset id="deletion-choices"></fieldset><label id="deletion-all-row" class="checkbox-field" hidden><input id="deletion-all-ack" type="checkbox">我确认同时删除所有关联任务，包括历史和已完成记录</label><p id="deletion-error" class="form-error" role="status"></p><p class="notice">删除会立即保存并重新计算统计。可通过页面上方“撤销删除”或“设置 → 最近删除”恢复，刷新后仍可撤销。</p><div class="dialog-actions"><button class="secondary-button" data-deletion-close="deletion-dialog">取消</button><button id="deletion-confirm" class="primary-button danger-button">确认删除</button></div></dialog>
     <dialog id="clear-deletions-dialog" class="edit-dialog" aria-labelledby="clear-deletions-title"><div class="dialog-header"><h2 id="clear-deletions-title">永久清理最近删除？</h2></div><p>将清理全部撤销副本，之后不能再撤销这些删除。当前任务、分类、计划和其他数据不受影响。建议先导出完整备份。</p><div class="dialog-actions"><button class="secondary-button" data-deletion-close="clear-deletions-dialog">取消</button><button id="clear-deletions-confirm" class="primary-button danger-button">永久清理撤销副本</button></div></dialog>`);
   const notice = document.createElement('section'); notice.id = 'undo-notice'; notice.className = 'undo-notice'; notice.setAttribute('aria-label', '删除后的恢复'); notice.hidden = true;
+  const postponeButton = document.createElement('button'); postponeButton.id = 'item-action-postpone'; postponeButton.className = 'secondary-button action-menu-button'; postponeButton.textContent = '推迟任务…'; $('item-action-edit').after(postponeButton);
+  document.body.insertAdjacentHTML('beforeend', '<dialog id="postpone-dialog" class="edit-dialog" aria-labelledby="postpone-title"><form id="postpone-form"><h2 id="postpone-title">推迟未完成任务</h2><p>仅移动这一次未完成任务，来源关联保留，不顺延整个计划，不改动已完成历史；目标日期的预算请自行核对。</p><label>安排到日期<input id="postpone-date" type="date" min="1900-01-01" max="9999-12-31" required></label><p id="postpone-error" class="form-error" role="status"></p><div class="dialog-actions"><button type="button" id="postpone-cancel" class="secondary-button">取消</button><button type="submit" class="primary-button">确认推迟</button></div></form></dialog>');
+  let postponeRequest = null;
+  postponeButton.addEventListener('click', () => {
+    if (!menuRequest) return; postponeRequest = { ...menuRequest }; $('item-actions-dialog').close();
+    $('postpone-date').value = window.StudyStorage.shiftDate(postponeRequest.date, 1); $('postpone-error').textContent = ''; $('postpone-dialog').showModal();
+  });
+  $('postpone-cancel').addEventListener('click', () => $('postpone-dialog').close());
+  $('postpone-form').addEventListener('submit', event => {
+    event.preventDefault(); if (!postponeRequest || busy) return; busy = true;
+    const saved = A.mutate(next => window.TodayWorkModels.postponeTask(next, postponeRequest.date, postponeRequest.taskId, $('postpone-date').value)); busy = false;
+    if (saved) { const date = $('postpone-date').value; postponeRequest = null; $('postpone-dialog').close(); A.selectDate(date); A.toast('任务已推迟，来源关联保留。'); } else $('postpone-error').textContent = '未推迟，请查看页面保存提示。';
+  });
   $('storage-warning').after(notice);
   const recent = document.createElement('section'); recent.className = 'settings-section'; recent.id = 'recent-deletions'; $('settings-view').append(recent);
   document.querySelectorAll('[data-deletion-close]').forEach(button => button.addEventListener('click', () => $(button.dataset.deletionClose).close()));
@@ -18,6 +31,7 @@
       $('item-actions-name').textContent = info.label;
       $('item-action-edit').textContent = request.type === 'task' ? '编辑任务' : '重命名分类';
       $('item-action-delete').textContent = request.type === 'task' ? '删除任务' : '删除分类';
+      postponeButton.hidden = request.type !== 'task' || !!info.done;
       $('item-actions-dialog').showModal();
     } catch (error) { A.toast(error.message); }
   }
@@ -70,7 +84,7 @@
       $('deletion-title').textContent = '删除已保存'; $('deletion-summary').textContent = `已删除 ${entry.removedCount} 条任务记录${entry.movedCount ? `，${entry.movedCount} 项已移到未分类` : ''}${entry.detachedCount ? `，保留 ${entry.detachedCount} 条任务并解除关联` : ''}。关闭后可撤销。`;
       $('deletion-choices').hidden = true; $('deletion-all-row').hidden = true; $('deletion-confirm').disabled = true;
       $('deletion-confirm').textContent = '已删除'; $('deletion-dialog').querySelector('.dialog-actions [data-deletion-close]').textContent = '完成';
-    } else { $('deletion-error').textContent = '未完成删除，原记录未被覆盖。请检查页面提示；若其他窗口改动了关联任务，请取消并重新打开确认。'; updateConfirmation(); }
+    } else { $('deletion-error').textContent = `未完成删除，原记录未被覆盖：${A.getLastError()}。若其他窗口改动了关联任务，请取消并重新打开确认。`; updateConfirmation(); }
   });
   function undo(id) {
     if (busy) return; busy = true;

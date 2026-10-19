@@ -29,6 +29,9 @@ test('precache resolves all shell files under a GitHub Pages-style subpath', asy
   const { events, added } = worker(); let promise;
   events.install({ waitUntil: value => { promise = value; } }); await promise;
   assert.ok(added.length >= 17);
+  for (const file of ['js/sounds.js', 'js/experience.js', 'css/experience.css']) {
+    assert.ok(added.some(href => new URL(href).pathname.endsWith('/' + file)), `${file} must work offline`);
+  }
   for (const href of added) {
     const url = new URL(href); assert.ok(url.pathname.startsWith('/today-work/'));
     const file = url.pathname.slice('/today-work/'.length) || 'index.html'; assert.ok(fs.existsSync(path.join(root, file)), file);

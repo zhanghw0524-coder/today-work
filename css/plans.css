@@ -18,4 +18,15 @@
 .plan-ack {line-height:1.8;margin:16px 0!important;align-items:flex-start!important;font-size:13px!important}
 .plan-ack input {margin-top:3px}
 #prompt-form>button {margin-top:14px}
+.draft-task-row {display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.draft-task-row .checkbox-field {min-width:0;flex:1;margin:0;align-items:flex-start}
+.draft-task-row small {display:block;color:var(--muted);font-size:12px;margin-top:6px}
+.draft-task-row button {flex:none;min-height:44px}
+.plan-wizard [hidden],#prompt-dialog [hidden] {display:none!important}
+.plan-wizard,.wide-dialog {max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;scroll-padding-block:22px}
+.plan-wizard .dialog-actions,#prompt-dialog .dialog-actions {position:sticky;bottom:-1px;background:var(--surface, var(--bg));padding:14px 0 max(12px,env(safe-area-inset-bottom));z-index:2;border-top:1px solid var(--line)}
+#schedule-error {white-space:pre-wrap}
+#full-plan-details input,#full-plan-details select,#draft-task-dialog input {scroll-margin-block:70px}
+#prompt-dialog summary,#full-plan-dialog summary {min-height:40px;line-height:1.6;cursor:pointer}
+@media(max-width:720px){.plan-wizard button,#prompt-dialog button,#draft-task-dialog button{min-height:44px}.plan-wizard,.wide-dialog{max-height:calc(100dvh - 12px)}.draft-task-row{gap:7px}.draft-task-row button{padding:8px}.plan-wizard .dialog-actions{bottom:-1px}.task-tools .text-button{min-height:44px!important}}
 @media(max-width:720px){.task-tools{gap:7px;padding-inline:14px}.plan-wizard{max-width:calc(100vw - 20px)}.weekday-choices{gap:12px}.plan-wizard .form-grid{grid-template-columns:1fr}.scheduled-day{padding:12px}}

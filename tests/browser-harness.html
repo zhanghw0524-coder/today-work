@@ -1,0 +1,12 @@
+<!doctype html><meta charset="utf-8"><title>TW 隔离媒体验收</title>
+<style>body{font:16px system-ui;margin:20px}button{padding:12px;margin:8px}textarea{display:block;width:100%;height:65px}iframe{width:100%;height:700px;border:1px solid #ddd}audio{display:block;margin:10px}output{display:block;padding:8px}</style>
+<h1>TW 隔离媒体验收（合成数据）</h1>
+<p>此页面不属于产品，不被打包或离线缓存。音频由产品的同一段 Web Audio 合成函数实际渲染。</p>
+<button data-render="task">渲染并试听单条音效</button><button data-render="all">渲染并试听全部完成</button>
+<audio id="audition" controls></audio><output id="audio-status"></output><input id="wave-data" type="hidden">
+<button id="fail-image">模拟图片写入失败</button><button id="fail-settings">模拟设置保存失败</button><button id="clear-fault">恢复正常存储</button><button id="count-images">检查图片记录数</button><output id="fault-status">正常</output>
+<button data-fixture="left">生成横图并送入左侧上传处理</button><button data-fixture="right">生成竖图并送入右侧上传处理</button><button data-fixture="invalid">送入不支持的 SVG</button>
+<label>验收宽度<select id="frame-width"><option value="1440">1440</option><option value="390">390</option><option value="320">320</option></select></label>
+<button id="refresh-frame">刷新隔离应用</button><button id="before-frame">修改前源代码</button><button id="after-frame">修改后源代码</button>
+<iframe id="app-frame" title="隔离 Today Work" src="index.html" style="width:1440px;height:844px"></iframe>
+<script src="js/sounds.js"></script><script src="qa.js"></script>

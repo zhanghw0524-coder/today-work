@@ -14,6 +14,8 @@
   let toastTimer;
   let featureUI = null;
   let downloadUrl = null;
+  let mutationError = '';
+  $('task-note').closest('.form-grid').insertAdjacentHTML('beforeend', '<label class="full-width">任务说明<textarea id="task-description" rows="3" maxlength="4000"></textarea></label><div id="task-source-info" class="full-width subtle"></div>');
   const formatDate = (key, options = {}) => S.parseDate(key).toLocaleDateString('zh-CN', options);
 
   function toast(message) {
@@ -80,6 +82,7 @@
 
   function mutate(change, options = {}) {
     try {
+      mutationError = '';
       // Reload first so another tab's saved changes are preserved.
       const next = S.load();
       if (!next) throw new Error('本地数据已被清除，请刷新页面后再试。');
@@ -91,6 +94,7 @@
       render(options);
       return true;
     } catch (error) {
+      mutationError = error.message;
       $('save-status').textContent = '保存失败，请重试';
       $('save-status').classList.add('error');
       console.error('Today Work 保存失败：', error);
@@ -119,6 +123,7 @@
   }
 
   function render(options = {}) {
+    document.body.dataset.view = view;
     const active = document.activeElement;
     const focusTask = active?.matches('.task-label input') ? active.dataset.task : null;
     const summary = Stats.calculate(data, today);
@@ -126,6 +131,7 @@
     const subtitles = { today: '安排今天的任务，为长期目标积累每一小步。', history: '回头看看，原来你已经走了这么远。', stats: '今天的一点进步，会成为未来的底气。', leetcode: '从做过一道题，到真正掌握一种方法。', routes: '大目标有方向，每一步有记录。', settings: '管理外观与本地数据。' };
     const labels = { today: '每日任务', history: '学习记录', stats: '打卡统计', leetcode: 'LeetCode', routes: '学习路线', settings: '设置' };
     const eyebrows = { today: 'YOUR DAILY PROGRESS', history: 'EVERY STEP COUNTS', stats: 'SMALL STEPS, REAL GROWTH', leetcode: 'PRACTICE & UNDERSTAND', routes: 'YOUR LONG-TERM JOURNEY', settings: 'MAKE IT YOURS' };
+    titles.plans = '把计划，变成行动'; subtitles.plans = '在常用 AI 中讨论，再回到这里安排每一天。'; labels.plans = '计划'; eyebrows.plans = 'PLAN YOUR NEXT STEP';
     if ($('page-title').dataset.view !== view) { $('page-title').innerHTML = `${titles[view]}<span class="heading-dot">.</span>`; $('page-title').dataset.view = view; }
     $('page-subtitle').textContent = subtitles[view];
     $('page-eyebrow').textContent = eyebrows[view];
@@ -133,7 +139,7 @@
     $('journey-day').textContent = `第 ${Math.max(1, S.dayDistance(data.startDate, today) + 1)} 天`;
     for (const item of document.querySelectorAll('[data-view]')) item.classList.toggle('active', item.dataset.view === view);
     for (const section of document.querySelectorAll('.view')) section.hidden = section.id !== `${view}-view`;
-    document.querySelector('.metrics').hidden = ['leetcode', 'routes', 'settings'].includes(view);
+    document.querySelector('.metrics').hidden = ['today', 'plans', 'leetcode', 'routes', 'settings'].includes(view);
     const diagnostic = S.diagnostics();
     $('storage-warning').hidden = !diagnostic.warning;
     $('storage-warning').textContent = diagnostic.warning;
@@ -254,6 +260,8 @@
     $('task-estimated').value = task?.estimatedMinutes ?? '';
     $('task-actual').value = task?.actualMinutes ?? '';
     $('task-note').value = task?.note || '';
+    $('task-description').value = task?.description || '';
+    $('task-source-info').innerHTML = `${task?.stage ? `<p>阶段：${escape(task.stage)}</p>` : ''}${(Array.isArray(task?.resources) ? task.resources : []).map(resource => /^https?:\/\/[^\s<>"']+$/i.test(resource.url) ? `<p><a href="${escape(resource.url)}" target="_blank" rel="noopener noreferrer">${escape(resource.title)}</a></p>` : '').join('')}`;
     $('edit-hint').textContent = `仅修改 ${formatDate(selected, { year: 'numeric', month: 'long', day: 'numeric' })} 的内容。`;
     $('edit-dialog').showModal();
     $('edit-input').focus();
@@ -282,12 +290,16 @@
     const input = event.target;
     if (!input.matches('input[type="checkbox"]')) return;
     const checked = input.checked;
-    mutate(next => {
+    let feedback = null;
+    const saved = mutate(next => {
       const group = findCategory(next, selected, input.dataset.category);
       const task = group.tasks.find(item => item.id === input.dataset.task);
       if (!task) throw new Error('此任务已被删除，请刷新后再试。');
+      const before = Stats.summarize(next.days[selected]), wasDone = task.done;
       task.done = checked;
+      feedback = window.TodayWorkSounds?.completionKind(before, Stats.summarize(next.days[selected]), { checked, wasDone, date: selected, today, manual: event.isTrusted });
     }, { tasks: false });
+    if (saved) window.TodayWorkSounds?.feedback(feedback, data.settings.sound);
   });
   $('task-groups').addEventListener('click', event => {
     const button = event.target.closest('button[data-action]');
@@ -316,7 +328,7 @@
     if (!value) { $('edit-input').setCustomValidity('请输入内容，不能只填写空格。'); $('edit-input').reportValidity(); return; }
     if (!editing) return;
     const context = { ...editing };
-    const detail = { priority: $('task-priority').value, estimatedMinutes: $('task-estimated').value === '' ? null : Number($('task-estimated').value), actualMinutes: $('task-actual').value === '' ? null : Number($('task-actual').value), note: $('task-note').value.trim() };
+    const detail = { priority: $('task-priority').value, estimatedMinutes: $('task-estimated').value === '' ? null : Number($('task-estimated').value), actualMinutes: $('task-actual').value === '' ? null : Number($('task-actual').value), note: $('task-note').value.trim(), description: $('task-description').value.trim() };
     const saved = mutate(next => {
       const { type, date, categoryId, taskId } = context;
       if (type === 'add-category') {
@@ -330,6 +342,7 @@
           const task = category.tasks.find(item => item.id === taskId);
           if (!task) throw new Error('此任务已被删除，请刷新后再试。');
           task.title = value;
+          if (task.estimatedMinutes !== detail.estimatedMinutes) delete task.estimatedFromDefault;
           Object.assign(task, detail);
         }
       }
@@ -363,7 +376,7 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden) checkNewDay(); });
   window.TodayWorkApp = {
     getData: () => data, getToday: () => today, getSelected: () => selected, getView: () => view,
-    mutate, selectDate, switchView, toast, escape, formatDate, download, setTheme, openEditor,
+    mutate, selectDate, switchView, toast, escape, formatDate, download, setTheme, openEditor, getLastError: () => mutationError,
     replaceData(next) { data = next; applyTheme(data.settings.theme); $('save-status').textContent = '✓ 已保存到本地'; $('save-status').classList.remove('error'); render(); },
     registerFeatures(features) { featureUI = features; render(); }
   };
